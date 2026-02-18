@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        min-height: 100vh;
+        background: radial-gradient(circle at top left, #1f2937, #020617);
+        color: #f9fafb;
+        display: flex;
+        align-items: stretch;
+        justify-content: center;
+        padding: 24px;
+      }
+
+      .shell {
+        width: 100%;
+        max-width: 1100px;
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 20px;
+        background: rgba(15, 23, 42, 0.9);
+        border-radius: 24px;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+        overflow: hidden;
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        backdrop-filter: blur(18px);
+        animation: floatIn 0.6s ease-out;
+      }
+
+      @keyframes floatIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px) scale(0.98);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      .sidebar {
+        background: radial-gradient(circle at top, #0f172a, #020617);
+        border-right: 1px solid rgba(148, 163, 184, 0.25);
+        padding: 24px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .brand-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 999px;
+        background: conic-gradient(from 140deg, #38bdf8, #22c55e, #a855f7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .brand-icon::after {
+        content: "";
+        position: absolute;
+        inset: 3px;
+        border-radius: inherit;
+        background: rgba(15, 23, 42, 0.95);
+      }
+
+      .brand-initials {
+        position: relative;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .brand-text {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .brand-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+      }
+
+      .brand-subtitle {
+        font-size: 0.7rem;
+        color: #9ca3af;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .sidebar-section-title {
+        font-size: 0.75rem;
+        font-weight: 500;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: #6b7280;
+      }
+
+      .nav {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        color: #e5e7eb;
+        text-decoration: none;
+        border: 1px solid transparent;
+        background: transparent;
+        transition: background 0.16s ease, transform 0.12s ease,
+          border-color 0.16s ease, box-shadow 0.16s ease;
+        cursor: pointer;
+      }
+
+      .nav-link span.icon {
+        width: 22px;
+        height: 22px;
+        border-radius: 999px;
+        background: radial-gradient(circle at 30% 0, #38bdf8, #0f172a);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+      }
+
+      .nav-link.active {
+        background: linear-gradient(135deg, #22c55e1a, #22c55e33);
+        border-color: rgba(34, 197, 94, 0.5);
+        box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.25);
+      }
+
+      .nav-link:hover {
+        transform: translateY(-1px);
+        background: rgba(15, 23, 42, 0.8);
+        border-color: rgba(148, 163, 184, 0.4);
+      }
+
+      .nav-link-label {
+        flex: 1;
+      }
+
+      .nav-link-pill {
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 0.65rem;
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        color: #9ca3af;
+      }
+
+      .sidebar-footer {
+        margin-top: auto;
+        padding-top: 12px;
+        border-top: 1px dashed rgba(55, 65, 81, 0.8);
+        font-size: 0.7rem;
+        color: #6b7280;
+      }
+
+      .main {
+        padding: 22px 24px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .title-block {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .page-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .page-title-pill {
+        font-size: 0.7rem;
+        padding: 3px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        color: #9ca3af;
+        background: rgba(15, 23, 42, 0.9);
+      }
+
+      .page-subtitle {
+        font-size: 0.8rem;
+        color: #9ca3af;
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn {
+        border-radius: 999px;
+        padding: 8px 14px;
+        font-size: 0.8rem;
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        background: rgba(15, 23, 42, 0.9);
+        color: #e5e7eb;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+        transition: background 0.16s ease, transform 0.12s ease,
+          box-shadow 0.16s ease, border-color 0.16s ease;
+      }
+
+      .btn-primary {
+        background: radial-gradient(circle at top left, #22c55e, #16a34a);
+        border-color: transparent;
+        box-shadow: 0 12px 30px rgba(34, 197, 94, 0.35);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 18px 40px rgba(34, 197, 94, 0.5);
+      }
+
+      .btn-ghost {
+        opacity: 0.9;
+      }
+
+      .btn-ghost:hover {
+        transform: translateY(-1px);
+        background: rgba(15, 23, 42, 1);
+      }
+
+      .badge-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: radial-gradient(circle at 30% 0, #22c55e, #16a34a);
+        box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.18);
+      }
+
+      .content {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        height: 100%;
+      }
+
+      .stats-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .stat-card {
+        flex: 1 1 160px;
+        min-width: 0;
+        padding: 10px 12px;
+        border-radius: 16px;
+        background: radial-gradient(circle at top, #020617, #020617);
+        border: 1px solid rgba(30, 64, 175, 0.5);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        inset: -60%;
+        background: conic-gradient(
+          from 180deg,
+          transparent 0,
+          rgba(56, 189, 248, 0.4),
+          rgba(52, 211, 153, 0.3),
+          transparent 70%
+        );
+        opacity: 0.12;
+        animation: spin 18s linear infinite;
+      }
+
+      .stat-inner {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .stat-label {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: #6b7280;
+      }
+
+      .stat-value {
+        font-size: 1rem;
+        font-weight: 600;
+      }
+
+      .stat-muted {
+        font-size: 0.7rem;
+        color: #9ca3af;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .card {
+        flex: 1;
+        border-radius: 18px;
+        background: radial-gradient(circle at top left, #020617, #020617);
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        padding: 14px 14px 12px;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+
+      .card-title {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: #9ca3af;
+      }
+
+      .card-subtitle {
+        font-size: 0.75rem;
+        color: #6b7280;
+      }
+
+      .card-body {
+        position: relative;
+        flex: 1;
+        min-height: 0;
+        padding: 8px;
+        border-radius: 14px;
+        background: radial-gradient(circle at top, #020617, #020617);
+        border: 1px dashed rgba(55, 65, 81, 0.9);
+      }
+
+      .upload-list {
+        list-style: none;
+        max-height: 380px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding-right: 4px;
+      }
+
+      .upload-list::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .upload-list::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .upload-list::-webkit-scrollbar-thumb {
+        background: rgba(75, 85, 99, 0.8);
+        border-radius: 999px;
+      }
+
+      @keyframes itemEnter {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Each <li> is created in JS. We style it generically. */
+      #uploadList li {
+        padding: 9px 10px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #020617, #020617);
+        border: 1px solid rgba(55, 65, 81, 0.9);
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        animation: itemEnter 0.18s ease-out;
+      }
+
+      #uploadList li button {
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.6);
+        background: rgba(15, 23, 42, 0.95);
+        padding: 5px 10px;
+        font-size: 0.7rem;
+        color: #e5e7eb;
+        cursor: pointer;
+        margin-left: 4px;
+        transition: background 0.12s ease, transform 0.1s ease,
+          border-color 0.12s ease;
+      }
+
+      #uploadList li button:hover {
+        transform: translateY(-0.5px);
+        background: rgba(15, 23, 42, 1);
+        border-color: rgba(251, 191, 36, 0.9);
+      }
+
+      .file-label {
+        font-weight: 500;
+        color: #e5e7eb;
+      }
+
+      .text-label {
+        font-weight: 500;
+        color: #a855f7;
+      }
+
+      .empty-state {
+        font-size: 0.8rem;
+        color: #6b7280;
+        text-align: center;
+        padding: 26px 10px;
+      }
+
+      .empty-pulse {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px dashed rgba(55, 65, 81, 0.9);
+      }
+
+      .empty-pulse-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: #38bdf8;
+        animation: pulse 1.4s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.4);
+          opacity: 0.5;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      @media (max-width: 820px) {
+        .shell {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          border-right: none;
+          border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+          padding-bottom: 18px;
+        }
+      }
+
+      @media (max-width: 640px) {
+        body {
+          padding: 12px;
+        }
+
+        .shell {
+          border-radius: 20px;
+        }
+
+        .header-row {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .header-actions {
+          width: 100%;
+          justify-content: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-icon">
+            <span class="brand-initials">FV</span>
+          </div>
+          <div class="brand-text">
+            <span class="brand-title">File Vault</span>
+            <span class="brand-subtitle">Admin console</span>
+          </div>
+        </div>
+
+        <div>
+          <p class="sidebar-section-title">Navigation</p>
+          <div class="nav" style="margin-top: 8px">
+            <button class="nav-link active" type="button">
+              <span class="icon">📂</span>
+              <span class="nav-link-label">Dashboard</span>
+              <span class="nav-link-pill">Live</span>
+            </button>
+            <a href="upload.html" class="nav-link">
+              <span class="icon">⬆️</span>
+              <span class="nav-link-label">Upload center</span>
+              <span class="nav-link-pill">Create</span>
+            </a>
+            <a href="admin.html" class="nav-link">
+              <span class="icon">🔑</span>
+              <span class="nav-link-label">Logout</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="sidebar-footer">
+          Securely reviewing uploads in real-time.<br />Tokens are required for
+          every admin request.
+        </div>
+      </aside>
+
+      <main class="main">
+        <div class="header-row">
+          <div class="title-block">
+            <div class="page-title">
+              Admin dashboard
+              <span class="page-title-pill">
+                <span class="badge-dot"></span>
+                Session active
+              </span>
+            </div>
+            <p class="page-subtitle">
+              View, download, and delete files and text that users have
+              uploaded.
+            </p>
+          </div>
+
+          <div class="header-actions">
+            <a href="upload.html" class="btn btn-ghost">
+              <span>Go to upload</span>
+            </a>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="loadUploads()"
+            >
+              Refresh uploads
+            </button>
+          </div>
+        </div>
+
+        <div class="content">
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-inner">
+                <div class="stat-label">Status</div>
+                <div class="stat-value">Online</div>
+                <div class="stat-muted">Connected to MongoDB & API</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-inner">
+                <div class="stat-label">Actions</div>
+                <div class="stat-value">Download & delete</div>
+                <div class="stat-muted">
+                  Manage both file and text uploads here
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <section class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">All uploads</div>
+                <div class="card-subtitle">
+                  Latest uploads appear at the top of the list.
+                </div>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <ul id="uploadList" class="upload-list">
+                <!-- Populated by JavaScript -->
+              </ul>
+              <div class="empty-state" id="empty-state" style="display: none">
+                <div class="empty-pulse">
+                  <span class="empty-pulse-dot"></span>
+                  Waiting for the first upload...
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      async function loadUploads() {
+        const token = localStorage.getItem("token")
+
+        if (!token) {
+          alert("Not authorized")
+          window.location.href = "admin.html"
+          return
+        }
+
+        const response = await fetch("http://l192.168.1.39:5000/admin/uploads", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+
+        if (!response.ok) {
+          const err = await response.json()
+          alert(err.message)
+          return
+        }
+
+        const uploads = await response.json()
+
+        const list = document.getElementById("uploadList")
+        list.innerHTML = ""
+
+        uploads.forEach(upload => {
+          const li = document.createElement("li")
+
+          if (upload.type === "file") {
+            li.innerHTML = `
+        <span class="file-label">File:</span> ${upload.filename}
+        <span>
+          <button onclick="downloadFile('${upload._id}')">Download</button>
+          <button onclick="deleteUpload('${upload._id}')">Delete</button>
+        </span>
+      `
+          } else {
+            li.innerHTML = `
+        <span class="text-label">Text:</span> ${upload.content}
+        <span>
+          <button onclick="deleteUpload('${upload._id}')">Delete</button>
+        </span>
+      `
+          }
+
+          list.appendChild(li)
+        })
+
+        const emptyState = document.getElementById("empty-state")
+        if (uploads.length === 0) {
+          emptyState.style.display = "block"
+        } else {
+          emptyState.style.display = "none"
+        }
+      }
+
+      async function downloadFile(id) {
+        const token = localStorage.getItem("token")
+
+        const response = await fetch(
+          `http://l192.168.1.39:5000/admin/download/${id}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        )
+
+        if (!response.ok) {
+          alert("Download failed")
+          return
+        }
+
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(blob)
+
+        const a = document.createElement("a")
+        a.href = url
+        a.download = "file"
+        document.body.appendChild(a)
+        a.click()
+        a.remove()
+      }
+
+      async function deleteUpload(id) {
+        const token = localStorage.getItem("token")
+
+        const response = await fetch(
+          `http://l192.168.1.39:5000/admin/upload/${id}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        )
+
+        if (!response.ok) {
+          alert("Delete failed")
+          return
+        }
+
+        loadUploads()
+      }
+
+      loadUploads()
+    </script>
+  </body>
+</html>

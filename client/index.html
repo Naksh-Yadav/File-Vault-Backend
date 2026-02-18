@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upload</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        min-height: 100vh;
+        background: radial-gradient(circle at top left, #1f2937, #020617);
+        color: #f9fafb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+
+      .shell {
+        width: 100%;
+        max-width: 480px;
+        background: rgba(15, 23, 42, 0.95);
+        border-radius: 24px;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+        padding: 20px 20px 18px;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(16px);
+        animation: floatIn 0.55s ease-out;
+      }
+
+      .shell::before {
+        content: "";
+        position: absolute;
+        inset: -40%;
+        background: conic-gradient(
+          from 220deg,
+          transparent 0,
+          rgba(56, 189, 248, 0.75),
+          rgba(168, 85, 247, 0.7),
+          transparent 70%
+        );
+        opacity: 0.18;
+        pointer-events: none;
+        animation: spin 20s linear infinite;
+      }
+
+      .shell-inner {
+        position: relative;
+        z-index: 1;
+      }
+
+      @keyframes floatIn {
+        from {
+          opacity: 0;
+          transform: translateY(18px) scale(0.98);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+      }
+
+      .title {
+        font-size: 1.2rem;
+        font-weight: 600;
+      }
+
+      .subtitle {
+        font-size: 0.8rem;
+        color: #9ca3af;
+        margin-top: 4px;
+      }
+
+      .badge {
+        font-size: 0.7rem;
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.5);
+        background: rgba(15, 23, 42, 0.95);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .badge-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: radial-gradient(circle at 30% 0, #22c55e, #16a34a);
+        box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.3);
+      }
+
+      .card {
+        border-radius: 18px;
+        border: 1px solid rgba(55, 65, 81, 0.9);
+        background: radial-gradient(circle at top left, #020617, #020617);
+        padding: 16px 16px 14px;
+      }
+
+      .field-label {
+        font-size: 0.8rem;
+        color: #d1d5db;
+        margin-bottom: 6px;
+      }
+
+      .field-hint {
+        font-size: 0.7rem;
+        color: #6b7280;
+        margin-bottom: 8px;
+      }
+
+      .file-input-wrap {
+        position: relative;
+        border-radius: 14px;
+        border: 1px dashed rgba(75, 85, 99, 0.9);
+        background: rgba(15, 23, 42, 0.9);
+        padding: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        transition: border-color 0.16s ease, background 0.16s ease,
+          transform 0.12s ease;
+      }
+
+      .file-input-wrap:hover {
+        border-color: rgba(56, 189, 248, 0.9);
+        background: rgba(15, 23, 42, 1);
+        transform: translateY(-1px);
+      }
+
+      .file-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 999px;
+        background: radial-gradient(circle at 30% 0, #38bdf8, #0f172a);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.95rem;
+      }
+
+      .file-input-text {
+        font-size: 0.8rem;
+      }
+
+      #fileInput {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      #textInput {
+        width: 100%;
+        min-height: 120px;
+        max-height: 220px;
+        resize: vertical;
+        border-radius: 12px;
+        border: 1px solid rgba(55, 65, 81, 0.9);
+        background: rgba(15, 23, 42, 0.95);
+        color: #e5e7eb;
+        padding: 10px 11px;
+        font-size: 0.85rem;
+        outline: none;
+        transition: border-color 0.14s ease, box-shadow 0.14s ease,
+          background 0.14s ease;
+      }
+
+      #textInput::placeholder {
+        color: #6b7280;
+      }
+
+      #textInput:focus {
+        border-color: rgba(168, 85, 247, 0.9);
+        box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.7);
+        background: rgba(15, 23, 42, 1);
+      }
+
+      .actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 12px;
+        gap: 10px;
+      }
+
+      .links {
+        font-size: 0.75rem;
+        color: #9ca3af;
+      }
+
+      .links a {
+        color: #38bdf8;
+        text-decoration: none;
+      }
+
+      .links a:hover {
+        text-decoration: underline;
+      }
+
+      button.primary {
+        border-radius: 999px;
+        border: none;
+        padding: 8px 18px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        background: radial-gradient(circle at top left, #22c55e, #16a34a);
+        color: #f9fafb;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 16px 38px rgba(22, 163, 74, 0.55);
+        transition: transform 0.12s ease, box-shadow 0.12s ease,
+          filter 0.12s ease;
+      }
+
+      button.primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 20px 46px rgba(22, 163, 74, 0.7);
+        filter: brightness(1.02);
+      }
+
+      button.primary:active {
+        transform: translateY(0);
+        box-shadow: 0 10px 26px rgba(22, 163, 74, 0.5);
+      }
+
+      #message {
+        margin-top: 10px;
+        font-size: 0.8rem;
+        color: #e5e7eb;
+        min-height: 1.2em;
+      }
+
+      .message-success {
+        color: #4ade80;
+      }
+
+      .message-error {
+        color: #f97373;
+      }
+
+      @media (max-width: 540px) {
+        body {
+          padding: 14px;
+        }
+        .shell {
+          border-radius: 20px;
+        }
+        .header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 8px;
+        }
+        .actions {
+          flex-direction: column-reverse;
+          align-items: stretch;
+        }
+        button.primary {
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <div class="shell-inner">
+        <header class="header">
+          <div>
+            <h2 class="title">Upload file or text</h2>
+            <p class="subtitle">
+              Choose a file or paste some text. Only one of them is required.
+            </p>
+          </div>
+          <div class="badge">
+            <span class="badge-dot"></span>
+            Secure upload
+          </div>
+        </header>
+
+        <section class="card">
+          <label class="field-label">File</label>
+          <p class="field-hint">
+            Drag &amp; drop or click to choose a file (max 50 MB).
+          </p>
+          <label class="file-input-wrap">
+            <div class="file-icon">📁</div>
+            <div class="file-input-text" id="fileLabel">
+              Click to select a file, or leave empty to upload text only.
+            </div>
+            <input type="file" id="fileInput" />
+          </label>
+
+          <div style="margin-top: 10px">
+            <label class="field-label">Text</label>
+            <p class="field-hint">
+              Optional — any text you enter will be stored as a text upload.
+            </p>
+            <textarea
+              id="textInput"
+              placeholder="Or write something here..."
+            ></textarea>
+          </div>
+
+          <div class="actions">
+            <div class="links">
+              <a href="dashboard.html">Go to admin dashboard</a>
+            </div>
+
+            <button class="primary" onclick="upload()">
+              <span>Upload</span>
+              <span>⬆️</span>
+            </button>
+          </div>
+
+          <p id="message"></p>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      async function upload() {
+        const file = document.getElementById("fileInput").files[0]
+        const text = document.getElementById("textInput").value
+        const msgEl = document.getElementById("message")
+    
+        msgEl.innerText = "Uploading..."
+        msgEl.className = ""
+    
+        try {
+          // ===== FILE UPLOAD =====
+          if (file) {
+            const formData = new FormData()
+            formData.append("file", file)
+            formData.append("upload_preset", "file_vault_unsigned")
+    
+            // Upload to Cloudinary
+            const cloudRes = await fetch(
+              "https://api.cloudinary.com/v1_1/drntebl9e/auto/upload",
+              {
+                method: "POST",
+                body: formData
+              }
+            )
+    
+            if (!cloudRes.ok) {
+              throw new Error("Cloudinary upload failed")
+            }
+    
+            const cloudData = await cloudRes.json()
+            console.log("Cloudinary Success:", cloudData)
+    
+            // Send metadata to backend
+            const backendRes = await fetch("http://192.168.1.39:5000/upload", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                type: "file",
+                filename: file.name,
+                filepath: cloudData.secure_url,
+                fileSize: file.size
+              })
+            })
+    
+            if (!backendRes.ok) {
+              const errorData = await backendRes.json()
+              console.error("Backend Error:", errorData)
+              throw new Error("Backend failed")
+            }
+    
+            msgEl.innerText = "File uploaded successfully 🚀"
+            msgEl.className = "message-success"
+            return
+          }
+    
+          // ===== TEXT UPLOAD =====
+          if (text) {
+            const backendRes = await fetch("http://192.168.1.39:5000/upload", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                type: "text",
+                content: text
+              })
+            })
+    
+            if (!backendRes.ok) {
+              throw new Error("Text upload failed")
+            }
+    
+            msgEl.innerText = "Text uploaded successfully 🚀"
+            msgEl.className = "message-success"
+            return
+          }
+    
+          msgEl.innerText = "No file or text provided"
+          msgEl.className = "message-error"
+    
+        } catch (error) {
+          console.error("Upload Error:", error)
+          msgEl.innerText = "Upload failed ❌"
+          msgEl.className = "message-error"
+        }
+      }
+    
+      const fileInput = document.getElementById("fileInput")
+      const fileLabel = document.getElementById("fileLabel")
+    
+      fileInput.addEventListener("change", () => {
+        if (fileInput.files[0]) {
+          fileLabel.textContent = `Selected: ${fileInput.files[0].name}`
+        } else {
+          fileLabel.textContent =
+            "Click to select a file, or leave empty to upload text only."
+        }
+      })
+    </script>
+    
+    
+  </body>
+</html>
