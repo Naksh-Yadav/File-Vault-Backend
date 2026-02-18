@@ -51,7 +51,9 @@ app.use(express.json());
 
 
 app.use(cors({
-  origin: "*", // temporary for testing
+  origin: "https://filevault-admin.vercel.app",
+  methods: ["GET", "POST", "DELETE"],
+  credentials: true
 }));
 
 
