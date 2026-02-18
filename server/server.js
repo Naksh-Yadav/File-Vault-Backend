@@ -160,7 +160,7 @@ app.post("/admin/register", async (req, res) => {
   
       const token = jwt.sign(
         { id: admin._id },
-        "supersecretkey",
+        process.env.JWT_SECRET,
         { expiresIn: "1h" }
       )
   
