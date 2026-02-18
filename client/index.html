@@ -349,107 +349,103 @@
       </div>
     </div>
 
-    <script>
-      async function upload() {
-        const file = document.getElementById("fileInput").files[0]
-        const text = document.getElementById("textInput").value
-        const msgEl = document.getElementById("message")
-    
-        msgEl.innerText = "Uploading..."
-        msgEl.className = ""
-    
-        try {
-          // ===== FILE UPLOAD =====
-          if (file) {
-            const formData = new FormData()
-            formData.append("file", file)
-            formData.append("upload_preset", "file_vault_unsigned")
-    
-            // Upload to Cloudinary
-            const cloudRes = await fetch(
-              "https://api.cloudinary.com/v1_1/drntebl9e/auto/upload",
-              {
-                method: "POST",
-                body: formData
-              }
-            )
-    
-            if (!cloudRes.ok) {
-              throw new Error("Cloudinary upload failed")
-            }
-    
-            const cloudData = await cloudRes.json()
-            console.log("Cloudinary Success:", cloudData)
-    
-            // Send metadata to backend
-            const backendRes = await fetch("http://192.168.1.39:5000/upload", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({
-                type: "file",
-                filename: file.name,
-                filepath: cloudData.secure_url,
-                fileSize: file.size
-              })
-            })
-    
-            if (!backendRes.ok) {
-              const errorData = await backendRes.json()
-              console.error("Backend Error:", errorData)
-              throw new Error("Backend failed")
-            }
-    
-            msgEl.innerText = "File uploaded successfully 🚀"
-            msgEl.className = "message-success"
-            return
+<script>
+  const API_URL = "https://YOUR-BACKEND-NAME.onrender.com";
+
+  async function upload() {
+    const file = document.getElementById("fileInput").files[0]
+    const text = document.getElementById("textInput").value
+    const msgEl = document.getElementById("message")
+
+    msgEl.innerText = "Uploading..."
+    msgEl.className = ""
+
+    try {
+      if (file) {
+        const formData = new FormData()
+        formData.append("file", file)
+        formData.append("upload_preset", "file_vault_unsigned")
+
+        const cloudRes = await fetch(
+          "https://api.cloudinary.com/v1_1/drntebl9e/auto/upload",
+          {
+            method: "POST",
+            body: formData
           }
-    
-          // ===== TEXT UPLOAD =====
-          if (text) {
-            const backendRes = await fetch("http://192.168.1.39:5000/upload", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({
-                type: "text",
-                content: text
-              })
-            })
-    
-            if (!backendRes.ok) {
-              throw new Error("Text upload failed")
-            }
-    
-            msgEl.innerText = "Text uploaded successfully 🚀"
-            msgEl.className = "message-success"
-            return
-          }
-    
-          msgEl.innerText = "No file or text provided"
-          msgEl.className = "message-error"
-    
-        } catch (error) {
-          console.error("Upload Error:", error)
-          msgEl.innerText = "Upload failed ❌"
-          msgEl.className = "message-error"
+        )
+
+        if (!cloudRes.ok) {
+          throw new Error("Cloudinary upload failed")
         }
+
+        const cloudData = await cloudRes.json()
+
+        const backendRes = await fetch(`${API_URL}/upload`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            type: "file",
+            filename: file.name,
+            filepath: cloudData.secure_url,
+            fileSize: file.size
+          })
+        })
+
+        if (!backendRes.ok) {
+          throw new Error("Backend failed")
+        }
+
+        msgEl.innerText = "File uploaded successfully 🚀"
+        msgEl.className = "message-success"
+        return
       }
-    
-      const fileInput = document.getElementById("fileInput")
-      const fileLabel = document.getElementById("fileLabel")
-    
-      fileInput.addEventListener("change", () => {
-        if (fileInput.files[0]) {
-          fileLabel.textContent = `Selected: ${fileInput.files[0].name}`
-        } else {
-          fileLabel.textContent =
-            "Click to select a file, or leave empty to upload text only."
+
+      if (text) {
+        const backendRes = await fetch(`${API_URL}/upload`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            type: "text",
+            content: text
+          })
+        })
+
+        if (!backendRes.ok) {
+          throw new Error("Text upload failed")
         }
-      })
-    </script>
+
+        msgEl.innerText = "Text uploaded successfully 🚀"
+        msgEl.className = "message-success"
+        return
+      }
+
+      msgEl.innerText = "No file or text provided"
+      msgEl.className = "message-error"
+
+    } catch (error) {
+      console.error("Upload Error:", error)
+      msgEl.innerText = "Upload failed ❌"
+      msgEl.className = "message-error"
+    }
+  }
+
+  const fileInput = document.getElementById("fileInput")
+  const fileLabel = document.getElementById("fileLabel")
+
+  fileInput.addEventListener("change", () => {
+    if (fileInput.files[0]) {
+      fileLabel.textContent = `Selected: ${fileInput.files[0].name}`
+    } else {
+      fileLabel.textContent =
+        "Click to select a file, or leave empty to upload text only."
+    }
+  })
+</script>
+
     
     
   </body>
