@@ -656,116 +656,97 @@
       </main>
     </div>
 
-    <script>
-      async function loadUploads() {
-        const token = localStorage.getItem("token")
+<script>
+  const API_URL = "https://file-vault-backend-cla9.onrender.com";
 
-        if (!token) {
-          alert("Not authorized")
-          window.location.href = "admin.html"
-          return
+  async function loadUploads() {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("Not authorized");
+      window.location.href = "admin.html";
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/admin/uploads`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
         }
+      });
 
-        const response = await fetch("http://l192.168.1.39:5000/admin/uploads", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
+      if (!response.ok) {
+        throw new Error("Failed to fetch uploads");
+      }
 
-        if (!response.ok) {
-          const err = await response.json()
-          alert(err.message)
-          return
-        }
+      const uploads = await response.json();
 
-        const uploads = await response.json()
+      const list = document.getElementById("uploadList");
+      list.innerHTML = "";
 
-        const list = document.getElementById("uploadList")
-        list.innerHTML = ""
+      uploads.forEach(upload => {
+        const li = document.createElement("li");
 
-        uploads.forEach(upload => {
-          const li = document.createElement("li")
-
-          if (upload.type === "file") {
-            li.innerHTML = `
-        <span class="file-label">File:</span> ${upload.filename}
-        <span>
-          <button onclick="downloadFile('${upload._id}')">Download</button>
-          <button onclick="deleteUpload('${upload._id}')">Delete</button>
-        </span>
-      `
-          } else {
-            li.innerHTML = `
-        <span class="text-label">Text:</span> ${upload.content}
-        <span>
-          <button onclick="deleteUpload('${upload._id}')">Delete</button>
-        </span>
-      `
-          }
-
-          list.appendChild(li)
-        })
-
-        const emptyState = document.getElementById("empty-state")
-        if (uploads.length === 0) {
-          emptyState.style.display = "block"
+        if (upload.type === "file") {
+          li.innerHTML = `
+            <span class="file-label">File:</span> ${upload.filename}
+            <span>
+              <button onclick="downloadFile('${upload._id}')">Download</button>
+              <button onclick="deleteUpload('${upload._id}')">Delete</button>
+            </span>
+          `;
         } else {
-          emptyState.style.display = "none"
-        }
-      }
-
-      async function downloadFile(id) {
-        const token = localStorage.getItem("token")
-
-        const response = await fetch(
-          `http://l192.168.1.39:5000/admin/download/${id}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        )
-
-        if (!response.ok) {
-          alert("Download failed")
-          return
+          li.innerHTML = `
+            <span class="text-label">Text:</span> ${upload.content}
+            <span>
+              <button onclick="deleteUpload('${upload._id}')">Delete</button>
+            </span>
+          `;
         }
 
-        const blob = await response.blob()
-        const url = window.URL.createObjectURL(blob)
+        list.appendChild(li);
+      });
 
-        const a = document.createElement("a")
-        a.href = url
-        a.download = "file"
-        document.body.appendChild(a)
-        a.click()
-        a.remove()
-      }
+      const emptyState = document.getElementById("empty-state");
+      emptyState.style.display = uploads.length === 0 ? "block" : "none";
 
-      async function deleteUpload(id) {
-        const token = localStorage.getItem("token")
+    } catch (err) {
+      console.error(err);
+      alert("Failed to load uploads");
+    }
+  }
 
-        const response = await fetch(
-          `http://l192.168.1.39:5000/admin/upload/${id}`,
-          {
-            method: "DELETE",
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        )
+  function downloadFile(id) {
+    const token = localStorage.getItem("token");
+    window.open(`${API_URL}/admin/download/${id}?token=${token}`, "_blank");
+  }
 
-        if (!response.ok) {
-          alert("Delete failed")
-          return
+  async function deleteUpload(id) {
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await fetch(`${API_URL}/admin/upload/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`
         }
+      });
 
-        loadUploads()
+      if (!response.ok) {
+        throw new Error("Delete failed");
       }
 
-      loadUploads()
-    </script>
+      loadUploads();
+
+    } catch (err) {
+      console.error(err);
+      alert("Delete failed");
+    }
+  }
+
+  loadUploads();
+</script>
+
   </body>
 </html>
